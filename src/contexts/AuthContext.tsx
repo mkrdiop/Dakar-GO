@@ -7,6 +7,8 @@ import { useRouter } from 'next/navigation';
 interface User {
   id: string;
   email: string;
+  firstName?: string;
+  lastName?: string;
   // Add other user properties as needed
 }
 
@@ -72,3 +74,4 @@ export const useAuth = () => {
   }
   return context;
 };
+

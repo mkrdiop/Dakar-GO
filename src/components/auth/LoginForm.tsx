@@ -18,16 +18,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import Link from "next/link";
 import { useState } from "react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Adresse e-mail invalide." }),
   password: z.string().min(6, { message: "Le mot de passe doit contenir au moins 6 caractères." }),
 });
 
+// Mock user credentials
+const MOCK_USER_EMAIL = "marchand@dakar.go";
+const MOCK_USER_PASSWORD = "password123";
+
 export default function LoginForm() {
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -41,12 +47,23 @@ export default function LoginForm() {
     setIsLoading(true);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
-    // In a real app, you would call your backend API here
-    // For now, we'll simulate a successful login
-    const mockUser = { id: "1", email: values.email };
-    const mockToken = "fake-auth-token";
-    login(mockUser, mockToken);
-    // setIsLoading(false); // login function handles navigation, so this might not be needed.
+    
+    if (values.email === MOCK_USER_EMAIL && values.password === MOCK_USER_PASSWORD) {
+      const mockUser = { id: "mock-user-1", email: values.email, firstName: "Mock", lastName: "Marchand" };
+      const mockToken = "fake-auth-token-mock-user";
+      login(mockUser, mockToken);
+      toast({
+        title: "Connexion réussie!",
+        description: `Bienvenue, ${MOCK_USER_EMAIL}!`,
+      });
+    } else {
+      toast({
+        title: "Échec de la connexion",
+        description: "Identifiants incorrects. Veuillez réessayer.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -55,6 +72,8 @@ export default function LoginForm() {
         <CardTitle className="text-3xl font-bold text-center text-primary">Se connecter</CardTitle>
         <CardDescription className="text-center text-muted-foreground">
           Accédez à votre tableau de bord Dakar Go.
+          <br />
+          <span className="text-xs">(Utilisateur test: {MOCK_USER_EMAIL} / {MOCK_USER_PASSWORD})</span>
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -117,3 +136,4 @@ export default function LoginForm() {
     </Card>
   );
 }
+

@@ -17,6 +17,8 @@ export default function Header() {
      return null; // Or a simpler header for auth pages
   }
 
+  const displayName = user ? (user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.email) : 'Marchand';
+
 
   return (
     <header className="bg-card shadow-md sticky top-0 z-50">
@@ -28,7 +30,7 @@ export default function Header() {
           {isAuthenticated ? (
             <>
               <span className="text-sm text-muted-foreground hidden sm:inline">
-                Bienvenue, {user?.email || 'Marchand'}
+                Bienvenue, {displayName}
               </span>
               <Button variant="ghost" size="sm" onClick={() => router.push('/dashboard')} title="Tableau de bord">
                 <LayoutDashboard className="mr-2 h-4 w-4" /> Tableau de bord
@@ -59,3 +61,4 @@ export default function Header() {
     </header>
   );
 }
+
