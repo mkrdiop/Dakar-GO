@@ -5,7 +5,7 @@ import OrderCard from '@/components/core/OrderCard';
 import type { Order } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { PlusCircle, ListFilter } from 'lucide-react';
+import { PlusCircle, ListFilter, Package } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import {
   DropdownMenu,

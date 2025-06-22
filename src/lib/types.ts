@@ -13,6 +13,24 @@ export const vehicleOptions: { value: VehicleType; label: string; labelFr: strin
 
 export type OrderStatus = 'pending' | 'accepted' | 'picked_up' | 'in_transit' | 'delivered' | 'cancelled' | 'failed';
 
+// Coordinates type for locations
+export interface LatLng {
+  lat: number;
+  lng: number;
+}
+
+// Driver location with additional metadata
+export interface DriverLocation {
+  position: LatLng;
+  heading: number; // Direction in degrees (0-360)
+  speed: number; // Speed in km/h
+  lastUpdated: Date;
+  driverId: string;
+  driverName: string;
+  vehicleType: VehicleType;
+  estimatedArrival: Date;
+}
+
 export interface Order {
   id: string;
   merchantId?: string; // From Orders table
@@ -20,8 +38,8 @@ export interface Order {
   customerPhone: string; // From Orders table
   pickupAddress: string;
   deliveryAddress: string;
-  // pickupLocation?: { lat: number; lng: number }; // POINT in DB
-  // deliveryLocation?: { lat: number; lng: number }; // POINT in DB
+  pickupLocation?: LatLng; // POINT in DB
+  deliveryLocation?: LatLng; // POINT in DB
   orderStatus: OrderStatus;
   orderDate?: Date; // From Orders table
   deliveryDate?: Date; // From Orders table
@@ -31,6 +49,8 @@ export interface Order {
   instructions?: string; // From Orders table
   estimatedDeliveryTime?: string;
   vehicleType: VehicleType;
+  driverId?: string; // Reference to the assigned driver
+  driverName?: string; // Name of the assigned driver
 }
 
 export interface CreateOrderFormData {

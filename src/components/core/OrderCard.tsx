@@ -85,7 +85,14 @@ export default function OrderCard({ order }: OrderCardProps) {
           </div>
         )}
       </CardContent>
-      <CardFooter className="border-t pt-4">
+      <CardFooter className="border-t pt-4 flex flex-col gap-2">
+        {(order.orderStatus === 'in_transit' || order.orderStatus === 'picked_up') && (
+          <Link href={`/track/${order.id}`} passHref legacyBehavior>
+            <Button variant="default" className="w-full">
+              Suivre la livraison <MapPin className="h-4 w-4 ml-2" />
+            </Button>
+          </Link>
+        )}
         <Link href={`/orders/${order.id}`} passHref legacyBehavior>
           <Button variant="ghost" className="w-full text-primary hover:bg-primary/10">
             Voir les détails <ArrowRight className="h-4 w-4 ml-2" />
