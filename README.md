@@ -5,6 +5,7 @@ Dakar GO delivery PRO is a modern web application designed for professional deli
 
 ## Features
 
+### Merchant App Features
 *   **User Authentication**: Secure login and signup functionality for merchants.
 *   **Merchant Dashboard**: A central hub for merchants to view, filter, and manage their delivery orders.
 *   **Order Creation**: Intuitive form for creating new delivery orders, including pickup/delivery addresses, customer details, order items, and special instructions.
@@ -12,6 +13,22 @@ Dakar GO delivery PRO is a modern web application designed for professional deli
 *   **AI-Powered Delivery Estimation**: Get intelligent delivery time estimates based on order details and (simulated) Dakar traffic conditions using Genkit and Google AI.
 *   **Detailed Order View**: Access comprehensive details for each order, including status, customer information, addresses, items, and total amount.
 *   **Status Filtering**: Filter orders on the dashboard by their current status (e.g., Pending, In Transit, Delivered).
+*   **Real-Time Driver Tracking**: Track drivers on an interactive map with real-time location updates and estimated arrival times.
+*   **Analytics Dashboard**: Comprehensive analytics with delivery metrics, revenue tracking, performance indicators, and visual charts for data-driven decision making.
+*   **Payment Integration**: Process payments for deliveries using multiple payment methods (Mobile Money, Card, Cash, Bank Transfer).
+*   **Payment History**: View and manage payment transactions with detailed information and receipt generation.
+*   **Multi-Provider Support**: Integration with popular payment providers in Senegal (Orange Money, Wave, Free Money).
+
+### Driver App Features
+*   **Driver Authentication**: Secure login system specifically for delivery drivers.
+*   **Order Management**: View, accept, and manage delivery orders assigned to the driver.
+*   **Real-Time Location Sharing**: Share driver location in real-time with merchants and customers.
+*   **Order Status Updates**: Update order status (accepted, picked up, in transit, delivered) throughout the delivery process.
+*   **Navigation**: Built-in navigation system to guide drivers to pickup and delivery locations.
+*   **Driver Profile**: Manage driver information, vehicle details, and performance metrics.
+*   **Earnings Tracking**: Monitor completed deliveries and earnings.
+
+### General Features
 *   **Responsive Design**: Optimized for a seamless experience across desktop and mobile devices.
 *   **Modern Tech Stack**: Built with Next.js App Router, TypeScript, and Server Components for performance and scalability.
 
@@ -21,6 +38,7 @@ Dakar GO delivery PRO is a modern web application designed for professional deli
 *   **Language**: TypeScript
 *   **Styling**: Tailwind CSS
 *   **UI Components**: ShadCN UI, Lucide Icons
+*   **Mapping**: Leaflet with React-Leaflet
 *   **AI Integration**: Genkit with Google AI (Gemini models)
 *   **Form Handling**: React Hook Form
 *   **Validation**: Zod
@@ -66,9 +84,17 @@ Follow these instructions to get a copy of the project up and running on your lo
 
     *   **Next.js App**:
         ```bash
-        npm run dev
+        # Use the provided script to start the app
+        ./start-app.sh
         ```
-        This will typically start the app on `http://localhost:9002`.
+        This will start the app on the configured port.
+
+    *   **Driver App**:
+        To specifically test the driver app:
+        ```bash
+        ./start-driver-app.sh
+        ```
+        This will start the app with focus on the driver features.
 
     *   **Genkit AI Flows**:
         Open a new terminal window and run:
@@ -91,12 +117,24 @@ Follow these instructions to get a copy of the project up and running on your lo
 
 ## Authentication
 
-The application includes a mock authentication system. To test the authenticated sections of the app (Dashboard, Create Order, Order Details):
+### Merchant Authentication
+The application includes a mock authentication system for merchants. To test the merchant sections of the app (Dashboard, Create Order, Order Details):
 
 *   **Email**: `marchand@dakar.go`
 *   **Password**: `password123`
 
-You can also use the Signup page to create a (mock) new user.
+You can also use the Signup page to create a (mock) new merchant user.
+
+### Driver Authentication
+For testing the driver app, use one of the following mock driver accounts:
+
+*   **Email**: `moussa.sow@dakar.go`
+*   **Password**: `password123`
+
+Or:
+
+*   **Email**: `fatou.diallo@dakar.go`
+*   **Password**: `password123`
 
 ## AI Features
 
@@ -112,11 +150,12 @@ These flows are defined in `src/ai/flows/`.
 A brief overview of the key directories:
 
 *   `src/app/`: Contains all Next.js App Router pages, layouts, and route handlers.
+    *   `src/app/driver/`: Driver app pages and routes.
 *   `src/components/`:
     *   `ui/`: ShadCN UI components.
     *   `auth/`: Authentication-related components (LoginForm, SignupForm).
-    *   `core/`: Core application components (OrderCard, CreateOrderForm, etc.).
-    *   `layout/`: Layout components like Header and AppLayout.
+    *   `core/`: Core application components (OrderCard, CreateOrderForm, TrackingMap, NavigationMap, etc.).
+    *   `layout/`: Layout components like Header, AppLayout, and DriverLayout.
 *   `src/actions/`: Server Actions for handling form submissions and other backend logic.
 *   `src/ai/`:
     *   `flows/`: Genkit AI flow definitions.

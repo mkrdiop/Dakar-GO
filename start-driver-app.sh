@@ -4,6 +4,6 @@
 export PORT=12000
 
 # Start the Next.js development server
-echo "Starting Dakar GO on port $PORT..."
+echo "Starting Dakar GO Driver App on port $PORT..."
 cd /workspace/Dakar-GO
-npm run dev -- -p $PORT --hostname 0.0.0.0
+npm run dev -- -p $PORT
