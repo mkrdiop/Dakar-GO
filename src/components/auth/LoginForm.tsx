@@ -126,12 +126,20 @@ export default function LoginForm() {
             </Button>
           </form>
         </Form>
-        <p className="mt-6 text-center text-sm text-muted-foreground">
-          Pas encore de compte?{" "}
-          <Link href="/signup" className="font-medium text-primary hover:underline">
-            S'inscrire
-          </Link>
-        </p>
+        <div className="mt-6 text-center text-sm text-muted-foreground space-y-2">
+          <p>
+            Pas encore de compte?{" "}
+            <Link href="/signup" className="font-medium text-primary hover:underline">
+              S'inscrire
+            </Link>
+          </p>
+          <p>
+            Vous êtes chauffeur?{" "}
+            <Link href="/driver/login" className="font-medium text-primary hover:underline">
+              Accès chauffeur
+            </Link>
+          </p>
+        </div>
       </CardContent>
     </Card>
   );

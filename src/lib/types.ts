@@ -63,3 +63,26 @@ export interface CreateOrderFormData {
   totalAmount: number;
   instructions?: string;
 }
+
+export type UserRole = 'merchant' | 'driver' | 'admin';
+
+export interface User {
+  id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  role: UserRole;
+  phone?: string;
+  profileImage?: string;
+  // Add other user properties as needed
+}
+
+export interface Driver extends User {
+  role: 'driver';
+  vehicleType: VehicleType;
+  vehiclePlate?: string;
+  isAvailable: boolean;
+  currentLocation?: LatLng;
+  rating?: number;
+  completedOrders?: number;
+}

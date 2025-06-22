@@ -3,14 +3,7 @@
 import type { ReactNode } from 'react';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-
-interface User {
-  id: string;
-  email: string;
-  firstName?: string;
-  lastName?: string;
-  // Add other user properties as needed
-}
+import { User, UserRole } from '@/lib/types';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -18,6 +11,7 @@ interface AuthContextType {
   login: (userData: User, token: string) => void;
   logout: () => void;
   isLoading: boolean;
+  userRole: UserRole | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,6 +20,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -33,7 +28,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const storedUser = localStorage.getItem('authUser');
     if (token && storedUser) {
       try {
-        setUser(JSON.parse(storedUser));
+        const parsedUser = JSON.parse(storedUser) as User;
+        setUser(parsedUser);
+        setUserRole(parsedUser.role);
         setIsAuthenticated(true);
       } catch (error) {
         console.error("Failed to parse user from localStorage", error);
@@ -48,20 +45,28 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('authToken', token);
     localStorage.setItem('authUser', JSON.stringify(userData));
     setUser(userData);
+    setUserRole(userData.role);
     setIsAuthenticated(true);
-    router.push('/dashboard');
+    
+    // Redirect based on user role
+    if (userData.role === 'driver') {
+      router.push('/driver/dashboard');
+    } else {
+      router.push('/dashboard');
+    }
   };
 
   const logout = () => {
     localStorage.removeItem('authToken');
     localStorage.removeItem('authUser');
     setUser(null);
+    setUserRole(null);
     setIsAuthenticated(false);
     router.push('/login');
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, isLoading, userRole }}>
       {children}
     </AuthContext.Provider>
   );
