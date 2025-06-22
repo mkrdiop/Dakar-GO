@@ -86,3 +86,62 @@ export interface Driver extends User {
   rating?: number;
   completedOrders?: number;
 }
+
+// Analytics Types
+export interface AnalyticsPeriod {
+  label: string;
+  value: 'today' | 'week' | 'month' | 'year' | 'custom';
+}
+
+export interface DeliveryMetrics {
+  total: number;
+  completed: number;
+  inTransit: number;
+  cancelled: number;
+  pending: number;
+}
+
+export interface RevenueMetrics {
+  total: number;
+  average: number;
+  growth: number;
+}
+
+export interface PerformanceMetrics {
+  deliveryTime: {
+    average: number; // in minutes
+    improvement: number; // percentage
+  };
+  customerSatisfaction: {
+    rating: number; // out of 5
+    improvement: number; // percentage
+  };
+}
+
+export interface VehicleMetrics {
+  type: VehicleType;
+  count: number;
+  percentage: number;
+}
+
+export interface LocationMetrics {
+  name: string;
+  count: number;
+  percentage: number;
+}
+
+export interface TimeSeriesData {
+  date: string;
+  value: number;
+}
+
+export interface AnalyticsDashboardData {
+  deliveryMetrics: DeliveryMetrics;
+  revenueMetrics: RevenueMetrics;
+  performanceMetrics: PerformanceMetrics;
+  vehicleDistribution: VehicleMetrics[];
+  topPickupLocations: LocationMetrics[];
+  topDeliveryLocations: LocationMetrics[];
+  deliveriesByDay: TimeSeriesData[];
+  revenueByDay: TimeSeriesData[];
+}

@@ -14,6 +14,7 @@ Dakar GO delivery PRO is a modern web application designed for professional deli
 *   **Detailed Order View**: Access comprehensive details for each order, including status, customer information, addresses, items, and total amount.
 *   **Status Filtering**: Filter orders on the dashboard by their current status (e.g., Pending, In Transit, Delivered).
 *   **Real-Time Driver Tracking**: Track drivers on an interactive map with real-time location updates and estimated arrival times.
+*   **Analytics Dashboard**: Comprehensive analytics with delivery metrics, revenue tracking, performance indicators, and visual charts for data-driven decision making.
 
 ### Driver App Features
 *   **Driver Authentication**: Secure login system specifically for delivery drivers.
