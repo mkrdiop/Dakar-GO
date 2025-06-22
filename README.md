@@ -12,6 +12,7 @@ Dakar GO delivery PRO is a modern web application designed for professional deli
 *   **AI-Powered Delivery Estimation**: Get intelligent delivery time estimates based on order details and (simulated) Dakar traffic conditions using Genkit and Google AI.
 *   **Detailed Order View**: Access comprehensive details for each order, including status, customer information, addresses, items, and total amount.
 *   **Status Filtering**: Filter orders on the dashboard by their current status (e.g., Pending, In Transit, Delivered).
+*   **Real-Time Driver Tracking**: Track drivers on an interactive map with real-time location updates and estimated arrival times.
 *   **Responsive Design**: Optimized for a seamless experience across desktop and mobile devices.
 *   **Modern Tech Stack**: Built with Next.js App Router, TypeScript, and Server Components for performance and scalability.
 
@@ -21,6 +22,7 @@ Dakar GO delivery PRO is a modern web application designed for professional deli
 *   **Language**: TypeScript
 *   **Styling**: Tailwind CSS
 *   **UI Components**: ShadCN UI, Lucide Icons
+*   **Mapping**: Leaflet with React-Leaflet
 *   **AI Integration**: Genkit with Google AI (Gemini models)
 *   **Form Handling**: React Hook Form
 *   **Validation**: Zod
