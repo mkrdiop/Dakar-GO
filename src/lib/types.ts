@@ -31,6 +31,10 @@ export interface DriverLocation {
   estimatedArrival: Date;
 }
 
+export type PaymentStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'refunded';
+
+export type PaymentMethod = 'card' | 'mobile_money' | 'cash' | 'bank_transfer';
+
 export interface Order {
   id: string;
   merchantId?: string; // From Orders table
@@ -45,7 +49,9 @@ export interface Order {
   deliveryDate?: Date; // From Orders table
   orderItems: string; // JSON in DB, string for simple form
   totalAmount: number; // From Orders table
-  paymentStatus?: 'pending' | 'paid' | 'failed' | 'refunded'; // From Orders table
+  paymentStatus?: PaymentStatus; // From Orders table
+  paymentMethod?: PaymentMethod; // From Orders table
+  paymentTransactionId?: string; // From Orders table
   instructions?: string; // From Orders table
   estimatedDeliveryTime?: string;
   vehicleType: VehicleType;
@@ -144,4 +150,69 @@ export interface AnalyticsDashboardData {
   topDeliveryLocations: LocationMetrics[];
   deliveriesByDay: TimeSeriesData[];
   revenueByDay: TimeSeriesData[];
+}
+
+// Payment Types
+export type PaymentMethod = 'card' | 'mobile_money' | 'cash' | 'bank_transfer';
+export type PaymentStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'refunded';
+
+export interface PaymentProvider {
+  id: string;
+  name: string;
+  logo: string;
+  type: 'card' | 'mobile_money' | 'bank';
+  isActive: boolean;
+}
+
+export interface PaymentTransaction {
+  id: string;
+  orderId: string;
+  amount: number;
+  currency: string;
+  method: PaymentMethod;
+  status: PaymentStatus;
+  transactionDate: Date;
+  transactionReference: string;
+  gatewayResponse?: any;
+  customerEmail?: string;
+  customerPhone?: string;
+  merchantId: string;
+  description?: string;
+  fees?: number;
+}
+
+export interface CardDetails {
+  cardNumber: string;
+  cardholderName: string;
+  expiryMonth: string;
+  expiryYear: string;
+  cvv: string;
+}
+
+export interface MobileMoneyDetails {
+  provider: string;
+  phoneNumber: string;
+  network: 'orange' | 'free' | 'expresso' | 'wave';
+}
+
+export interface PaymentRequest {
+  orderId: string;
+  amount: number;
+  currency: string;
+  method: PaymentMethod;
+  customerEmail: string;
+  customerPhone: string;
+  description?: string;
+  returnUrl?: string;
+  cardDetails?: CardDetails;
+  mobileMoneyDetails?: MobileMoneyDetails;
+}
+
+export interface PaymentResponse {
+  success: boolean;
+  transactionId?: string;
+  status: PaymentStatus;
+  message: string;
+  redirectUrl?: string;
+  gatewayReference?: string;
 }

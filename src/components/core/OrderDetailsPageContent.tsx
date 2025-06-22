@@ -3,8 +3,10 @@
 import type { Order } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import MapPlaceholder from './MapPlaceholder';
-import { Clock, Package, User, Phone, MapPin as MapPinIcon, Truck as TruckIcon, CheckCircle2, AlertTriangle, Info, Bike, CarFront } from 'lucide-react';
+import { Clock, Package, User, Phone, MapPin as MapPinIcon, Truck as TruckIcon, CheckCircle2, AlertTriangle, Info, Bike, CarFront, CreditCard } from 'lucide-react';
+import Link from 'next/link';
 import { Separator } from '@/components/ui/separator';
 import { Progress } from "@/components/ui/progress";
 import { vehicleOptions } from '@/lib/types';
@@ -44,6 +46,16 @@ const getStatusVariant = (status?: Order['orderStatus']): "default" | "secondary
     case 'cancelled':
     case 'failed': return 'destructive';
     default: return 'secondary';
+  }
+};
+
+const getPaymentStatusLabel = (status: string): string => {
+  switch (status) {
+    case 'pending': return 'En attente';
+    case 'paid': return 'Payé';
+    case 'failed': return 'Échec';
+    case 'refunded': return 'Remboursé';
+    default: return status;
   }
 };
 
@@ -165,9 +177,22 @@ export default function OrderDetailsPageContent({ order }: OrderDetailsPageConte
           
           <Separator />
           
-          <div>
-            <h4 className="font-semibold text-foreground">Montant Total</h4>
-            <p className="text-2xl font-bold text-primary">{order.totalAmount.toLocaleString('fr-FR')} FCFA</p>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <h4 className="font-semibold text-foreground">Montant Total</h4>
+              <p className="text-2xl font-bold text-primary">{order.totalAmount.toLocaleString('fr-FR')} FCFA</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {order.paymentStatus ? `Statut: ${getPaymentStatusLabel(order.paymentStatus)}` : 'Paiement en attente'}
+              </p>
+            </div>
+            
+            {(!order.paymentStatus || order.paymentStatus === 'pending' || order.paymentStatus === 'failed') && (
+              <Button asChild>
+                <Link href={`/checkout/${order.id}`}>
+                  <CreditCard className="mr-2 h-4 w-4" /> Payer maintenant
+                </Link>
+              </Button>
+            )}
           </div>
 
         </CardContent>

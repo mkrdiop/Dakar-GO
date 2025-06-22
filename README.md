@@ -15,6 +15,9 @@ Dakar GO delivery PRO is a modern web application designed for professional deli
 *   **Status Filtering**: Filter orders on the dashboard by their current status (e.g., Pending, In Transit, Delivered).
 *   **Real-Time Driver Tracking**: Track drivers on an interactive map with real-time location updates and estimated arrival times.
 *   **Analytics Dashboard**: Comprehensive analytics with delivery metrics, revenue tracking, performance indicators, and visual charts for data-driven decision making.
+*   **Payment Integration**: Process payments for deliveries using multiple payment methods (Mobile Money, Card, Cash, Bank Transfer).
+*   **Payment History**: View and manage payment transactions with detailed information and receipt generation.
+*   **Multi-Provider Support**: Integration with popular payment providers in Senegal (Orange Money, Wave, Free Money).
 
 ### Driver App Features
 *   **Driver Authentication**: Secure login system specifically for delivery drivers.
