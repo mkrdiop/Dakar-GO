@@ -27,6 +27,9 @@ const initialFruits: Fruit[] = [
   { id: 7, name: 'Fraises', price: 4000, image: 'https://placehold.co/600x400.png', icon: Leaf, quantity: 0, hint: 'fresh strawberries' },
   { id: 8, name: 'Mangues', price: 2200, image: 'https://placehold.co/600x400.png', icon: Leaf, quantity: 0, hint: 'ripe mangoes' },
   { id: 9, name: 'Pêches', price: 2800, image: 'https://placehold.co/600x400.png', icon: Leaf, quantity: 0, hint: 'sweet peaches' },
+  { id: 10, name: 'Kiwis', price: 3000, image: 'https://placehold.co/600x400.png', icon: Leaf, quantity: 0, hint: 'green kiwis' },
+  { id: 11, name: 'Poires', price: 1700, image: 'https://placehold.co/600x400.png', icon: Leaf, quantity: 0, hint: 'juicy pears' },
+  { id: 12, name: 'Pastèques', price: 2500, image: 'https://placehold.co/600x400.png', icon: Leaf, quantity: 0, hint: 'sliced watermelon' },
 ];
 
 const formatCurrency = (amount: number) => {
@@ -51,7 +54,7 @@ function FructiMarchePageSkeleton() {
       </header>
       <main className="flex-grow p-4 sm:p-8 pt-0">
         <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 pb-40">
-          {Array.from({ length: 9 }).map((_, i) => (
+          {Array.from({ length: 12 }).map((_, i) => (
             <Card key={i} className="flex flex-col overflow-hidden">
               <Skeleton className="h-48 w-full" />
               <CardHeader>
