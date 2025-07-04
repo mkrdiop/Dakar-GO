@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { Apple, Banana, Cherry, Citrus, Grape, Leaf, Minus, Plus, ShoppingCart, Package } from 'lucide-react';
 import type { Fruit } from '@/types';
 import { useToast } from "@/hooks/use-toast"
+import { Skeleton } from '@/components/ui/skeleton';
 
 // Data for our fruits
 const initialFruits: Fruit[] = [
@@ -31,10 +32,50 @@ const formatCurrency = (amount: number) => {
   }).format(amount);
 };
 
+function FructiMarchePageSkeleton() {
+  return (
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
+      <header className="py-8 px-4 sm:px-8">
+        <div className="container mx-auto flex items-center gap-4">
+          <Skeleton className="h-16 w-16 rounded-full" />
+          <div className="flex-1">
+            <Skeleton className="h-10 w-64 mb-2" />
+            <Skeleton className="h-6 w-80" />
+          </div>
+        </div>
+      </header>
+      <main className="flex-grow p-4 sm:p-8 pt-0">
+        <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 pb-40">
+          {Array.from({ length: 9 }).map((_, i) => (
+            <Card key={i} className="flex flex-col overflow-hidden">
+              <Skeleton className="h-48 w-full" />
+              <CardHeader>
+                <Skeleton className="h-8 w-3/4 mb-2" />
+                <Skeleton className="h-6 w-1/2" />
+              </CardHeader>
+              <CardContent className="flex-grow" />
+              <CardFooter className="flex justify-center items-center gap-4 bg-muted/50 p-4">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <Skeleton className="h-8 w-16" />
+                <Skeleton className="h-10 w-10 rounded-full" />
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      </main>
+    </div>
+  );
+}
+
 export default function FructiMarchePage() {
   const [fruits, setFruits] = useState<Fruit[]>(initialFruits);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { toast } = useToast()
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const handleQuantityChange = (fruitId: number, change: number) => {
     setFruits(prevFruits =>
@@ -57,6 +98,10 @@ export default function FructiMarchePage() {
     });
     setIsCartOpen(false);
     setFruits(initialFruits.map(f => ({...f, quantity: 0})));
+  }
+
+  if (!isClient) {
+    return <FructiMarchePageSkeleton />;
   }
 
   return (
