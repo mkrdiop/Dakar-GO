@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'FructiMarché',
+  title: 'fructiFruit',
   description: 'Votre marché de fruits frais en ligne.',
 };
 

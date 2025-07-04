@@ -39,7 +39,7 @@ const formatCurrency = (amount: number) => {
   return `${formattedAmount}\u00A0FCFA`;
 };
 
-function FructiMarchePageSkeleton() {
+function FructiFruitPageSkeleton() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <header className="py-8 px-4 sm:px-8">
@@ -74,7 +74,7 @@ function FructiMarchePageSkeleton() {
   );
 }
 
-export default function FructiMarchePage() {
+export default function FructiFruitPage() {
   const [fruits, setFruits] = useState<Fruit[]>(initialFruits);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { toast } = useToast()
@@ -158,7 +158,7 @@ export default function FructiMarchePage() {
   }
 
   if (!isClient) {
-    return <FructiMarchePageSkeleton />;
+    return <FructiFruitPageSkeleton />;
   }
 
   return (
@@ -169,7 +169,7 @@ export default function FructiMarchePage() {
             <Package className="w-8 h-8 text-primary" />
           </div>
           <div>
-            <h1 className="text-4xl font-bold font-headline text-primary-foreground">FructiMarché</h1>
+            <h1 className="text-4xl font-bold font-headline text-primary-foreground">fructiFruit</h1>
             <p className="text-muted-foreground">Votre marché de fruits frais en ligne.</p>
           </div>
         </div>
