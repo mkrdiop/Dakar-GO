@@ -14,8 +14,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/client';
-import { generateFruitImage } from '@/ai/flows/generate-fruit-image-flow';
-import { updateFruitImage } from './admin/actions';
 
 const iconMap = {
   Apple,
@@ -104,29 +102,6 @@ export default function FructiFruitPage() {
             const fruitsWithQuantity = data.map(fruit => ({...fruit, quantity: 0}));
             setFruits(fruitsWithQuantity);
             setLoading(false);
-
-            // Sequentially generate images for any fruits using a placeholder
-            (async () => {
-              const fruitsToUpdate = fruitsWithQuantity.filter(f => f.image && f.image.includes('placehold.co'));
-              for (const fruit of fruitsToUpdate) {
-                try {
-                  const { imageUrl } = await generateFruitImage({ description: fruit.hint });
-                  
-                  // Update image in the database
-                  await updateFruitImage(fruit.id, imageUrl);
-
-                  // Update local state for immediate feedback
-                  setFruits(currentFruits => 
-                    currentFruits.map(f => 
-                      f.id === fruit.id ? { ...f, image: imageUrl } : f
-                    )
-                  );
-                } catch (e: any) {
-                  // If generation fails, we just keep the placeholder from the DB.
-                  console.error(`AI image generation failed for ${fruit.name}: ${e.message}`);
-                }
-              }
-            })();
         }
     };
     getFruits();

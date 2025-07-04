@@ -62,7 +62,16 @@ export async function deleteFruit(id: number) {
     revalidatePath('/');
 }
 
-export async function updateFruitImage(id: number, imageUrl: string) {
+export async function regenerateFruitImage(id: number, hint: string) {
+  let imageUrl: string;
+  try {
+    const result = await generateFruitImage({ description: hint });
+    imageUrl = result.imageUrl;
+  } catch (e: any) {
+    console.error(`AI image regeneration failed for fruit ID ${id}: ${e.message}`);
+    return { error: `AI image generation failed: ${e.message}` };
+  }
+
   const cookieStore = cookies();
   const supabase = createClient(cookieStore);
 

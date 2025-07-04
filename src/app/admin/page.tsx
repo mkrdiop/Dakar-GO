@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { deleteFruit } from './actions';
+import { deleteFruit, regenerateFruitImage } from './actions';
 import Image from 'next/image';
 import { format } from 'date-fns';
 
@@ -32,25 +32,33 @@ export default async function AdminPage() {
                             <TableHead>Name</TableHead>
                             <TableHead>Price</TableHead>
                             <TableHead>Date Added</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
+                            <TableHead className="text-right w-[280px]">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {fruits?.map(fruit => (
                             <TableRow key={fruit.id}>
                                 <TableCell>
-                                    <Image src={fruit.image} alt={fruit.name} width={40} height={40} className="rounded-md object-cover"/>
+                                    <Image src={fruit.image.includes('placehold.co') ? 'https://placehold.co/40x40.png' : fruit.image} alt={fruit.name} width={40} height={40} className="rounded-md object-cover"/>
                                 </TableCell>
                                 <TableCell className="font-medium">{fruit.name}</TableCell>
                                 <TableCell>{fruit.price} FCFA</TableCell>
                                 <TableCell>{format(new Date(fruit.created_at), 'PPP')}</TableCell>
                                 <TableCell className="text-right">
-                                    <form action={async () => {
-                                        'use server';
-                                        await deleteFruit(fruit.id);
-                                    }}>
-                                        <Button variant="destructive" size="sm" type="submit">Delete</Button>
-                                    </form>
+                                    <div className="flex items-center justify-end gap-2">
+                                        <form action={async () => {
+                                            'use server';
+                                            await regenerateFruitImage(fruit.id, fruit.hint);
+                                        }}>
+                                            <Button variant="outline" size="sm" type="submit">Regenerate Image</Button>
+                                        </form>
+                                        <form action={async () => {
+                                            'use server';
+                                            await deleteFruit(fruit.id);
+                                        }}>
+                                            <Button variant="destructive" size="sm" type="submit">Delete</Button>
+                                        </form>
+                                    </div>
                                 </TableCell>
                             </TableRow>
                         ))}
