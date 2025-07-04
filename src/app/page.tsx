@@ -10,6 +10,7 @@ import { Apple, Banana, Cherry, Citrus, Grape, Leaf, Minus, Plus, ShoppingCart, 
 import type { Fruit } from '@/types';
 import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from '@/components/ui/skeleton';
+import { generateFruitImage } from '@/ai/flows/generate-fruit-image-flow';
 
 // Data for our fruits
 const initialFruits: Fruit[] = [
@@ -72,10 +73,38 @@ export default function FructiMarchePage() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { toast } = useToast()
   const [isClient, setIsClient] = useState(false);
+  const [areImagesLoading, setAreImagesLoading] = useState(true);
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
+    
+    const fetchImages = async () => {
+      try {
+        const imagePromises = initialFruits.map(fruit => 
+          generateFruitImage({ description: fruit.hint })
+        );
+        const generatedImages = await Promise.all(imagePromises);
+        
+        const updatedFruits = initialFruits.map((fruit, index) => ({
+          ...fruit,
+          image: generatedImages[index].imageUrl,
+        }));
+        
+        setFruits(updatedFruits);
+      } catch (error) {
+        console.error("Failed to generate fruit images:", error);
+        toast({
+          variant: 'destructive',
+          title: 'Erreur de génération d\'image',
+          description: 'Impossible de charger les images des fruits. Veuillez réessayer plus tard.',
+        });
+      } finally {
+        setAreImagesLoading(false);
+      }
+    };
+    
+    fetchImages();
+  }, [toast]);
 
   const handleQuantityChange = (fruitId: number, change: number) => {
     setFruits(prevFruits =>
@@ -123,7 +152,11 @@ export default function FructiMarchePage() {
           {fruits.map(fruit => (
             <Card key={fruit.id} className="flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group">
               <div className="relative w-full h-48">
-                 <Image src={fruit.image} alt={fruit.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" data-ai-hint={fruit.hint} />
+                 {areImagesLoading ? (
+                    <Skeleton className="h-full w-full" />
+                 ) : (
+                    <Image src={fruit.image} alt={fruit.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" data-ai-hint={fruit.hint} />
+                 )}
               </div>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 font-headline text-2xl">
