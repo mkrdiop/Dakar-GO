@@ -10,27 +10,19 @@ import { Apple, Banana, Cherry, Citrus, Grape, Leaf, Minus, Plus, ShoppingCart, 
 import type { Fruit } from '@/types';
 import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from '@/components/ui/skeleton';
-import { generateFruitImage } from '@/ai/flows/generate-fruit-image-flow';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
+import { createClient } from '@/lib/supabase/client';
 
-
-// Data for our fruits
-const initialFruits: Fruit[] = [
-  { id: 1, name: 'Pommes', price: 1500, image: 'https://placehold.co/600x400.png', icon: Apple, quantity: 0, hint: 'red apples' },
-  { id: 2, name: 'Bananes', price: 1200, image: 'https://placehold.co/600x400.png', icon: Banana, quantity: 0, hint: 'yellow bananas' },
-  { id: 3, name: 'Oranges', price: 1800, image: 'https://placehold.co/600x400.png', icon: Citrus, quantity: 0, hint: 'fresh oranges' },
-  { id: 4, name: 'Raisins', price: 2500, image: 'https://placehold.co/600x400.png', icon: Grape, quantity: 0, hint: 'purple grapes' },
-  { id: 5, name: 'Ananas', price: 2000, image: 'https://placehold.co/600x400.png', icon: Leaf, quantity: 0, hint: 'pineapple fruit' },
-  { id: 6, name: 'Cerises', price: 3500, image: 'https://placehold.co/600x400.png', icon: Cherry, quantity: 0, hint: 'red cherries' },
-  { id: 7, name: 'Fraises', price: 4000, image: 'https://placehold.co/600x400.png', icon: Leaf, quantity: 0, hint: 'fresh strawberries' },
-  { id: 8, name: 'Mangues', price: 2200, image: 'https://placehold.co/600x400.png', icon: Leaf, quantity: 0, hint: 'ripe mangoes' },
-  { id: 9, name: 'Pêches', price: 2800, image: 'https://placehold.co/600x400.png', icon: Leaf, quantity: 0, hint: 'sweet peaches' },
-  { id: 10, name: 'Kiwis', price: 3000, image: 'https://placehold.co/600x400.png', icon: Leaf, quantity: 0, hint: 'green kiwis' },
-  { id: 11, name: 'Poires', price: 1700, image: 'https://placehold.co/600x400.png', icon: Leaf, quantity: 0, hint: 'juicy pears' },
-  { id: 12, name: 'Pastèques', price: 2500, image: 'https://placehold.co/600x400.png', icon: Leaf, quantity: 0, hint: 'sliced watermelon' },
-];
+const iconMap = {
+  Apple,
+  Banana,
+  Citrus,
+  Grape,
+  Leaf,
+  Cherry,
+};
 
 const formatCurrency = (amount: number) => {
   const formattedAmount = new Intl.NumberFormat('fr-FR', {
@@ -75,11 +67,11 @@ function FructiFruitPageSkeleton() {
 }
 
 export default function FructiFruitPage() {
-  const [fruits, setFruits] = useState<Fruit[]>(initialFruits);
+  const [fruits, setFruits] = useState<Fruit[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { toast } = useToast()
   const [isClient, setIsClient] = useState(false);
-  const [areImagesLoading, setAreImagesLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [phoneNumber, setPhoneNumber] = useState('');
 
   const cleanedPhoneNumber = useMemo(() => phoneNumber.replace(/\s/g, ''), [phoneNumber]);
@@ -93,36 +85,24 @@ export default function FructiFruitPage() {
 
   useEffect(() => {
     setIsClient(true);
-    
-    const fetchImages = async () => {
-      setAreImagesLoading(true);
-      const currentFruitsState = [...initialFruits];
+    const getFruits = async () => {
+        const supabase = createClient();
+        const { data, error } = await supabase.from('fruits').select('*').order('id');
 
-      try {
-        // To avoid hitting the API rate limit, we'll request images sequentially
-        // instead of all at once.
-        for (let i = 0; i < initialFruits.length; i++) {
-          const fruit = initialFruits[i];
-          const generatedImage = await generateFruitImage({ description: fruit.hint });
-          currentFruitsState[i] = { ...fruit, image: generatedImage.imageUrl };
-          
-          // Update the state after each image is generated to show progress to the user.
-          setFruits([...currentFruitsState]);
+        if (error) {
+            console.error('Error fetching fruits:', error);
+            toast({
+                variant: 'destructive',
+                title: 'Erreur',
+                description: 'Impossible de charger les fruits.',
+            });
+        } else if (data) {
+            const fruitsWithQuantity = data.map(fruit => ({...fruit, quantity: 0}));
+            setFruits(fruitsWithQuantity);
         }
-      } catch (error) {
-        console.error("Failed to generate fruit images:", error);
-        toast({
-          variant: 'destructive',
-          title: 'Erreur de génération d\'image',
-          description: 'Le quota de l\'API a été dépassé. Certaines images n\'ont pas pu être chargées.',
-        });
-      } finally {
-        // Once all images are loaded (or an error occurred), we stop showing the loading skeleton.
-        setAreImagesLoading(false);
-      }
+        setLoading(false);
     };
-    
-    fetchImages();
+    getFruits();
   }, [toast]);
 
   const handleQuantityChange = (fruitId: number, change: number) => {
@@ -153,14 +133,14 @@ export default function FructiFruitPage() {
       description: "Merci pour votre achat. Votre commande a été passée.",
     });
     setIsCartOpen(false);
-    setFruits(initialFruits.map(f => ({...f, quantity: 0})));
+    setFruits(prev => prev.map(f => ({...f, quantity: 0})));
     setPhoneNumber('');
   }
 
-  if (!isClient) {
+  if (loading || !isClient) {
     return <FructiFruitPageSkeleton />;
   }
-
+  
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       <header className="py-8 px-4 sm:px-8">
@@ -177,22 +157,20 @@ export default function FructiFruitPage() {
 
       <main className="flex-grow p-4 sm:p-8 pt-0">
         <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 pb-40">
-          {fruits.map(fruit => (
+          {fruits.map(fruit => {
+            const IconComponent = iconMap[fruit.icon as keyof typeof iconMap] || Leaf;
+            return (
             <Card key={fruit.id} className="flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group">
               <div className="relative w-full h-48">
-                 {areImagesLoading && fruit.image.startsWith('https://placehold.co') ? (
-                    <Skeleton className="h-full w-full" />
-                 ) : (
-                    <Image src={fruit.image} alt={fruit.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" data-ai-hint={fruit.hint} />
-                 )}
+                 <Image src={fruit.image} alt={fruit.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" data-ai-hint={fruit.hint} />
               </div>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 font-headline text-2xl">
-                  <fruit.icon className="w-6 h-6 text-primary" />
+                  <IconComponent className="w-6 h-6 text-primary" />
                   {fruit.name}
                 </CardTitle>
                 <CardDescription className="text-xl font-semibold text-accent">
-                  {isClient ? formatCurrency(fruit.price) : <Skeleton className="h-6 w-24" />} / kg
+                  {formatCurrency(fruit.price)} / kg
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex-grow" />
@@ -206,7 +184,7 @@ export default function FructiFruitPage() {
                 </Button>
               </CardFooter>
             </Card>
-          ))}
+          )})}
         </div>
       </main>
 
@@ -238,11 +216,13 @@ export default function FructiFruitPage() {
                 </DialogHeader>
                 <div className="max-h-[60vh] overflow-y-auto my-4 -mr-6 pr-6">
                   <div className="grid gap-4">
-                    {cartItems.map(item => (
+                    {cartItems.map(item => {
+                      const IconComponent = iconMap[item.icon as keyof typeof iconMap] || Leaf;
+                      return (
                       <div key={item.id} className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                           <div className="bg-primary/10 p-2 rounded-md">
-                            <item.icon className="w-6 h-6 text-primary" />
+                            <IconComponent className="w-6 h-6 text-primary" />
                           </div>
                           <div>
                             <p className="font-semibold">{item.name}</p>
@@ -251,7 +231,7 @@ export default function FructiFruitPage() {
                         </div>
                         <p className="font-bold tabular-nums">{formatCurrency(item.quantity * item.price)}</p>
                       </div>
-                    ))}
+                    )})}
                     <Separator />
                     <div className="flex justify-between items-center font-bold text-lg">
                       <p>Total</p>

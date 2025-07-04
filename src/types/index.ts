@@ -6,7 +6,7 @@ export interface Fruit {
   name: string;
   price: number;
   image: string;
-  icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>;
+  icon: string;
   quantity: number;
   hint: string;
 }
