@@ -96,26 +96,29 @@ export default function FructiMarchePage() {
     setIsClient(true);
     
     const fetchImages = async () => {
+      setAreImagesLoading(true);
+      const currentFruitsState = [...initialFruits];
+
       try {
-        const imagePromises = initialFruits.map(fruit => 
-          generateFruitImage({ description: fruit.hint })
-        );
-        const generatedImages = await Promise.all(imagePromises);
-        
-        const updatedFruits = initialFruits.map((fruit, index) => ({
-          ...fruit,
-          image: generatedImages[index].imageUrl,
-        }));
-        
-        setFruits(updatedFruits);
+        // To avoid hitting the API rate limit, we'll request images sequentially
+        // instead of all at once.
+        for (let i = 0; i < initialFruits.length; i++) {
+          const fruit = initialFruits[i];
+          const generatedImage = await generateFruitImage({ description: fruit.hint });
+          currentFruitsState[i] = { ...fruit, image: generatedImage.imageUrl };
+          
+          // Update the state after each image is generated to show progress to the user.
+          setFruits([...currentFruitsState]);
+        }
       } catch (error) {
         console.error("Failed to generate fruit images:", error);
         toast({
           variant: 'destructive',
           title: 'Erreur de génération d\'image',
-          description: 'Impossible de charger les images des fruits. Veuillez réessayer plus tard.',
+          description: 'Le quota de l\'API a été dépassé. Certaines images n\'ont pas pu être chargées.',
         });
       } finally {
+        // Once all images are loaded (or an error occurred), we stop showing the loading skeleton.
         setAreImagesLoading(false);
       }
     };
@@ -178,7 +181,7 @@ export default function FructiMarchePage() {
           {fruits.map(fruit => (
             <Card key={fruit.id} className="flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group">
               <div className="relative w-full h-48">
-                 {areImagesLoading ? (
+                 {areImagesLoading && fruit.image.startsWith('https://placehold.co') ? (
                     <Skeleton className="h-full w-full" />
                  ) : (
                     <Image src={fruit.image} alt={fruit.name} fill className="object-cover group-hover:scale-105 transition-transform duration-300" data-ai-hint={fruit.hint} />
