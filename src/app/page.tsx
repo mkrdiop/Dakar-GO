@@ -118,7 +118,7 @@ export default function FructiMarchePage() {
   
   const cartItems = useMemo(() => fruits.filter(fruit => fruit.quantity > 0), [fruits]);
   const totalPrice = useMemo(() => cartItems.reduce((total, item) => total + item.price * item.quantity, 0), [cartItems]);
-  const totalItems = useMemo(() => cartItems.reduce((total, item) => total + item.quantity, 0), [cartItems]);
+  const totalItems = useMemo(() => cartItems.length, [cartItems]);
   
   const handlePayment = () => {
     toast({
@@ -164,7 +164,7 @@ export default function FructiMarchePage() {
                   {fruit.name}
                 </CardTitle>
                 <CardDescription className="text-xl font-semibold text-accent">
-                  {formatCurrency(fruit.price)} / kg
+                  {isClient ? formatCurrency(fruit.price) : <Skeleton className="h-6 w-24" />} / kg
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex-grow" />
@@ -186,7 +186,7 @@ export default function FructiMarchePage() {
         <footer className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-t p-4 shadow-top-lg animate-in slide-in-from-bottom-full duration-500">
           <div className="container mx-auto flex justify-between items-center">
             <div>
-              <p className="font-bold text-lg">{totalItems} article{totalItems > 1 ? 's' : ''} dans le panier</p>
+              <p className="font-bold text-lg">{totalItems} type{totalItems > 1 ? 's' : ''} de fruit{totalItems > 1 ? 's' : ''} dans le panier</p>
               <p className="text-2xl font-headline font-bold text-primary">{formatCurrency(totalPrice)}</p>
             </div>
             <Dialog open={isCartOpen} onOpenChange={setIsCartOpen}>
