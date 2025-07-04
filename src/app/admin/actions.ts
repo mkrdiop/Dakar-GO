@@ -16,11 +16,16 @@ export async function addFruit(formData: FormData) {
     return { error: 'All fields are required.' };
   }
 
+  let imageUrl: string;
   try {
-    // 1. Generate image using AI
-    const { imageUrl } = await generateFruitImage({ description: hint });
+    const result = await generateFruitImage({ description: hint });
+    imageUrl = result.imageUrl;
+  } catch (e: any) {
+    console.warn(`AI image generation failed, using placeholder. Error: ${e.message}`);
+    imageUrl = 'https://placehold.co/600x400.png';
+  }
 
-    // 2. Save to Supabase
+  try {
     const cookieStore = cookies();
     const supabase = createClient(cookieStore);
     const { error } = await supabase.from('fruits').insert([
@@ -32,16 +37,13 @@ export async function addFruit(formData: FormData) {
       return { error: `Database error: ${error.message}` };
     }
 
-    // 3. Revalidate paths to show new data
     revalidatePath('/admin');
     revalidatePath('/');
-
   } catch (e: any) {
-    console.error('Failed to add fruit:', e);
+    console.error('Failed to add fruit to database:', e);
     return { error: `Operation failed: ${e.message}` };
   }
   
-  // 4. Redirect to the admin page
   redirect('/admin');
 }
 
@@ -58,4 +60,23 @@ export async function deleteFruit(id: number) {
 
     revalidatePath('/admin');
     revalidatePath('/');
+}
+
+export async function updateFruitImage(id: number, imageUrl: string) {
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
+
+  const { error } = await supabase
+    .from('fruits')
+    .update({ image: imageUrl })
+    .match({ id });
+
+  if (error) {
+    console.error('Error updating fruit image:', error);
+    return { error: `Database error: ${error.message}` };
+  }
+
+  revalidatePath('/admin');
+  revalidatePath('/');
+  return { error: null };
 }
