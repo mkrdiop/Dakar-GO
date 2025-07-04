@@ -11,6 +11,10 @@ import type { Fruit } from '@/types';
 import { useToast } from "@/hooks/use-toast"
 import { Skeleton } from '@/components/ui/skeleton';
 import { generateFruitImage } from '@/ai/flows/generate-fruit-image-flow';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
+
 
 // Data for our fruits
 const initialFruits: Fruit[] = [
@@ -74,6 +78,16 @@ export default function FructiMarchePage() {
   const { toast } = useToast()
   const [isClient, setIsClient] = useState(false);
   const [areImagesLoading, setAreImagesLoading] = useState(true);
+  const [phoneNumber, setPhoneNumber] = useState('');
+
+  const cleanedPhoneNumber = useMemo(() => phoneNumber.replace(/\s/g, ''), [phoneNumber]);
+  const isPhoneNumberValid = useMemo(() => {
+    if (cleanedPhoneNumber.length !== 9) return false;
+    const prefix = cleanedPhoneNumber.substring(0, 2);
+    // Valid Senegalese prefixes
+    return ['77', '78', '76', '70', '75'].includes(prefix);
+  }, [cleanedPhoneNumber]);
+
 
   useEffect(() => {
     setIsClient(true);
@@ -121,12 +135,21 @@ export default function FructiMarchePage() {
   const totalItems = useMemo(() => cartItems.length, [cartItems]);
   
   const handlePayment = () => {
+    if (!isPhoneNumberValid) {
+      toast({
+        variant: 'destructive',
+        title: 'Numéro invalide',
+        description: 'Veuillez entrer un numéro de téléphone sénégalais valide.',
+      });
+      return;
+    }
     toast({
       title: "Paiement réussi!",
       description: "Merci pour votre achat. Votre commande a été passée.",
     });
     setIsCartOpen(false);
     setFruits(initialFruits.map(f => ({...f, quantity: 0})));
+    setPhoneNumber('');
   }
 
   if (!isClient) {
@@ -189,7 +212,12 @@ export default function FructiMarchePage() {
               <p className="font-bold text-lg">{totalItems} type{totalItems > 1 ? 's' : ''} de fruit{totalItems > 1 ? 's' : ''} dans le panier</p>
               <p className="text-2xl font-headline font-bold text-primary">{formatCurrency(totalPrice)}</p>
             </div>
-            <Dialog open={isCartOpen} onOpenChange={setIsCartOpen}>
+            <Dialog open={isCartOpen} onOpenChange={(open) => {
+              setIsCartOpen(open)
+              if (!open) {
+                  setPhoneNumber('')
+              }
+            }}>
               <DialogTrigger asChild>
                 <Button size="lg" className="font-bold text-lg py-6 px-8 shadow-lg">
                   <ShoppingCart className="mr-2 h-5 w-5" />
@@ -226,9 +254,25 @@ export default function FructiMarchePage() {
                     </div>
                   </div>
                 </div>
+                <div className="grid gap-2 my-4">
+                  <Label htmlFor="phone">Numéro de téléphone (Sénégal)</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    placeholder="Ex: 77 123 45 67"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
+                    className={cn({ "border-destructive focus-visible:ring-destructive": phoneNumber && !isPhoneNumberValid })}
+                  />
+                  {phoneNumber && !isPhoneNumberValid && (
+                    <p className="text-sm text-destructive">
+                      Veuillez entrer un numéro de téléphone sénégalais valide.
+                    </p>
+                  )}
+                </div>
                 <DialogFooter className="gap-2 sm:gap-0">
                   <Button type="button" variant="outline" onClick={() => setIsCartOpen(false)}>Continuer les achats</Button>
-                  <Button type="submit" size="lg" onClick={handlePayment}>
+                  <Button type="submit" size="lg" onClick={handlePayment} disabled={!isPhoneNumberValid}>
                     Payer {formatCurrency(totalPrice)}
                   </Button>
                 </DialogFooter>
