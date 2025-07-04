@@ -18,6 +18,9 @@ const initialFruits: Fruit[] = [
   { id: 4, name: 'Raisins', price: 2500, image: 'https://placehold.co/600x400.png', icon: Grape, quantity: 0, hint: 'purple grapes' },
   { id: 5, name: 'Ananas', price: 2000, image: 'https://placehold.co/600x400.png', icon: Leaf, quantity: 0, hint: 'pineapple fruit' },
   { id: 6, name: 'Cerises', price: 3500, image: 'https://placehold.co/600x400.png', icon: Cherry, quantity: 0, hint: 'red cherries' },
+  { id: 7, name: 'Fraises', price: 4000, image: 'https://placehold.co/600x400.png', icon: Leaf, quantity: 0, hint: 'fresh strawberries' },
+  { id: 8, name: 'Mangues', price: 2200, image: 'https://placehold.co/600x400.png', icon: Leaf, quantity: 0, hint: 'ripe mangoes' },
+  { id: 9, name: 'Pêches', price: 2800, image: 'https://placehold.co/600x400.png', icon: Leaf, quantity: 0, hint: 'sweet peaches' },
 ];
 
 const formatCurrency = (amount: number) => {
