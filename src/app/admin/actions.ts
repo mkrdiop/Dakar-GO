@@ -89,3 +89,21 @@ export async function regenerateFruitImage(id: number, hint: string) {
   revalidatePath('/');
   return { error: null };
 }
+
+export async function updateOrderStatus(id: number, status: string) {
+  const cookieStore = cookies();
+  const supabase = createClient(cookieStore);
+
+  const { error } = await supabase
+    .from('orders')
+    .update({ status })
+    .match({ id });
+
+  if (error) {
+    console.error('Error updating order status:', error);
+    return { error: `Database error: ${error.message}` };
+  }
+
+  revalidatePath('/admin/orders');
+  return { error: null };
+}

@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Package } from 'lucide-react';
+import { AdminNav } from './nav-links';
 
 export default function AdminLayout({
   children,
@@ -21,6 +22,7 @@ export default function AdminLayout({
         </div>
       </header>
       <main className="flex-grow container mx-auto p-4 sm:p-8">
+        <AdminNav />
         {children}
       </main>
     </div>

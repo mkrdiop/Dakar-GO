@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { createClient } from '@/lib/supabase/client';
+import { createOrder } from './actions';
 
 const iconMap = {
   Apple,
@@ -28,7 +29,7 @@ const formatCurrency = (amount: number) => {
   const formattedAmount = new Intl.NumberFormat('fr-FR', {
     minimumFractionDigits: 0,
   }).format(amount);
-  return `${formattedAmount}\u00A0FCFA`;
+  return `${formattedAmount} FCFA`;
 };
 
 function FructiFruitPageSkeleton() {
@@ -73,6 +74,7 @@ export default function FructiFruitPage() {
   const [isClient, setIsClient] = useState(false);
   const [loading, setLoading] = useState(true);
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const cleanedPhoneNumber = useMemo(() => phoneNumber.replace(/\s/g, ''), [phoneNumber]);
   const isPhoneNumberValid = useMemo(() => {
@@ -121,7 +123,7 @@ export default function FructiFruitPage() {
   const totalPrice = useMemo(() => cartItems.reduce((total, item) => total + item.price * item.quantity, 0), [cartItems]);
   const totalItems = useMemo(() => cartItems.length, [cartItems]);
   
-  const handlePayment = () => {
+  const handlePayment = async () => {
     if (!isPhoneNumberValid) {
       toast({
         variant: 'destructive',
@@ -130,13 +132,25 @@ export default function FructiFruitPage() {
       });
       return;
     }
-    toast({
-      title: "Paiement réussi!",
-      description: "Merci pour votre achat. Votre commande a été passée.",
-    });
-    setIsCartOpen(false);
-    setFruits(prev => prev.map(f => ({...f, quantity: 0})));
-    setPhoneNumber('');
+    setIsSubmitting(true);
+    const result = await createOrder(cartItems, cleanedPhoneNumber, totalPrice);
+
+    if (result.success) {
+      toast({
+        title: "Paiement réussi!",
+        description: `Merci pour votre achat. Votre commande #${result.orderId} a été passée.`,
+      });
+      setIsCartOpen(false);
+      setFruits(prev => prev.map(f => ({...f, quantity: 0})));
+      setPhoneNumber('');
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Erreur de commande',
+        description: result.error,
+      });
+    }
+    setIsSubmitting(false);
   }
 
   if (loading || !isClient) {
@@ -259,8 +273,8 @@ export default function FructiFruitPage() {
                 </div>
                 <DialogFooter className="gap-2 sm:gap-0">
                   <Button type="button" variant="outline" onClick={() => setIsCartOpen(false)}>Continuer les achats</Button>
-                  <Button type="submit" size="lg" onClick={handlePayment} disabled={!isPhoneNumberValid}>
-                    Payer {formatCurrency(totalPrice)}
+                  <Button type="button" size="lg" onClick={handlePayment} disabled={!isPhoneNumberValid || isSubmitting}>
+                    {isSubmitting ? 'Enregistrement...' : `Payer ${formatCurrency(totalPrice)}`}
                   </Button>
                 </DialogFooter>
               </DialogContent>
