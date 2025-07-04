@@ -33,11 +33,10 @@ const initialFruits: Fruit[] = [
 ];
 
 const formatCurrency = (amount: number) => {
-  return new Intl.NumberFormat('fr-FR', {
-    style: 'currency',
-    currency: 'XOF',
+  const formattedAmount = new Intl.NumberFormat('fr-FR', {
     minimumFractionDigits: 0,
   }).format(amount);
+  return `${formattedAmount}\u00A0FCFA`;
 };
 
 function FructiMarchePageSkeleton() {
