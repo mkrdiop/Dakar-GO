@@ -69,7 +69,7 @@ export default function LoginForm() {
   return (
     <Card className="w-full max-w-md shadow-xl">
       <CardHeader>
-        <CardTitle className="text-3xl font-bold text-center text-primary">Se connecter</CardTitle>
+        <CardTitle className="text-3xl font-bold text-center text-primary" role="heading" aria-level="1">Se connecter</CardTitle>
         <CardDescription className="text-center text-muted-foreground">
           Accédez à votre tableau de bord Dakar Go.
           <br />
@@ -98,24 +98,25 @@ export default function LoginForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Mot de passe</FormLabel>
-                  <FormControl>
-                    <div className="relative">
-                      <Input 
+                  <div className="relative">
+                    <FormControl>
+                      <Input
                         type={showPassword ? "text" : "password"}
-                        placeholder="********" 
-                        {...field} 
+                        placeholder="********"
+                        {...field}
                       />
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </Button>
-                    </div>
-                  </FormControl>
+                    </FormControl>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}
