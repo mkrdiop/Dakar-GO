@@ -5,7 +5,7 @@ import OrderCard from '@/components/core/OrderCard';
 import type { Order } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { PlusCircle, ListFilter, Package } from 'lucide-react';
+import { PlusCircle, ListFilter, Package, BarChart3, CreditCard } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import {
   DropdownMenu,
@@ -87,6 +87,16 @@ export default function DashboardPage() {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+          <Link href="/analytics" passHref>
+            <Button variant="outline">
+              <BarChart3 className="mr-2 h-4 w-4" /> Analytiques
+            </Button>
+          </Link>
+          <Link href="/payments" passHref>
+            <Button variant="outline">
+              <CreditCard className="mr-2 h-4 w-4" /> Paiements
+            </Button>
+          </Link>
           <Link href="/create-order" passHref>
             <Button>
               <PlusCircle className="mr-2 h-4 w-4" /> Nouvelle Commande

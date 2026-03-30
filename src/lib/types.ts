@@ -31,6 +31,10 @@ export interface DriverLocation {
   estimatedArrival: Date;
 }
 
+export type PaymentStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'refunded';
+
+export type PaymentMethod = 'card' | 'mobile_money' | 'cash' | 'bank_transfer';
+
 export interface Order {
   id: string;
   merchantId?: string; // From Orders table
@@ -45,7 +49,9 @@ export interface Order {
   deliveryDate?: Date; // From Orders table
   orderItems: string; // JSON in DB, string for simple form
   totalAmount: number; // From Orders table
-  paymentStatus?: 'pending' | 'paid' | 'failed' | 'refunded'; // From Orders table
+  paymentStatus?: PaymentStatus; // From Orders table
+  paymentMethod?: PaymentMethod; // From Orders table
+  paymentTransactionId?: string; // From Orders table
   instructions?: string; // From Orders table
   estimatedDeliveryTime?: string;
   vehicleType: VehicleType;
@@ -62,4 +68,151 @@ export interface CreateOrderFormData {
   vehicleType: VehicleType;
   totalAmount: number;
   instructions?: string;
+}
+
+export type UserRole = 'merchant' | 'driver' | 'admin';
+
+export interface User {
+  id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  role: UserRole;
+  phone?: string;
+  profileImage?: string;
+  // Add other user properties as needed
+}
+
+export interface Driver extends User {
+  role: 'driver';
+  vehicleType: VehicleType;
+  vehiclePlate?: string;
+  isAvailable: boolean;
+  currentLocation?: LatLng;
+  rating?: number;
+  completedOrders?: number;
+}
+
+// Analytics Types
+export interface AnalyticsPeriod {
+  label: string;
+  value: 'today' | 'week' | 'month' | 'year' | 'custom';
+}
+
+export interface DeliveryMetrics {
+  total: number;
+  completed: number;
+  inTransit: number;
+  cancelled: number;
+  pending: number;
+}
+
+export interface RevenueMetrics {
+  total: number;
+  average: number;
+  growth: number;
+}
+
+export interface PerformanceMetrics {
+  deliveryTime: {
+    average: number; // in minutes
+    improvement: number; // percentage
+  };
+  customerSatisfaction: {
+    rating: number; // out of 5
+    improvement: number; // percentage
+  };
+}
+
+export interface VehicleMetrics {
+  type: VehicleType;
+  count: number;
+  percentage: number;
+}
+
+export interface LocationMetrics {
+  name: string;
+  count: number;
+  percentage: number;
+}
+
+export interface TimeSeriesData {
+  date: string;
+  value: number;
+}
+
+export interface AnalyticsDashboardData {
+  deliveryMetrics: DeliveryMetrics;
+  revenueMetrics: RevenueMetrics;
+  performanceMetrics: PerformanceMetrics;
+  vehicleDistribution: VehicleMetrics[];
+  topPickupLocations: LocationMetrics[];
+  topDeliveryLocations: LocationMetrics[];
+  deliveriesByDay: TimeSeriesData[];
+  revenueByDay: TimeSeriesData[];
+}
+
+// Payment Types
+export type PaymentMethod = 'card' | 'mobile_money' | 'cash' | 'bank_transfer';
+export type PaymentStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'refunded';
+
+export interface PaymentProvider {
+  id: string;
+  name: string;
+  logo: string;
+  type: 'card' | 'mobile_money' | 'bank';
+  isActive: boolean;
+}
+
+export interface PaymentTransaction {
+  id: string;
+  orderId: string;
+  amount: number;
+  currency: string;
+  method: PaymentMethod;
+  status: PaymentStatus;
+  transactionDate: Date;
+  transactionReference: string;
+  gatewayResponse?: any;
+  customerEmail?: string;
+  customerPhone?: string;
+  merchantId: string;
+  description?: string;
+  fees?: number;
+}
+
+export interface CardDetails {
+  cardNumber: string;
+  cardholderName: string;
+  expiryMonth: string;
+  expiryYear: string;
+  cvv: string;
+}
+
+export interface MobileMoneyDetails {
+  provider: string;
+  phoneNumber: string;
+  network: 'orange' | 'free' | 'expresso' | 'wave';
+}
+
+export interface PaymentRequest {
+  orderId: string;
+  amount: number;
+  currency: string;
+  method: PaymentMethod;
+  customerEmail: string;
+  customerPhone: string;
+  description?: string;
+  returnUrl?: string;
+  cardDetails?: CardDetails;
+  mobileMoneyDetails?: MobileMoneyDetails;
+}
+
+export interface PaymentResponse {
+  success: boolean;
+  transactionId?: string;
+  status: PaymentStatus;
+  message: string;
+  redirectUrl?: string;
+  gatewayReference?: string;
 }

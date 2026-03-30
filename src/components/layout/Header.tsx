@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { LogOut, UserCircle, PackagePlus, LayoutDashboard } from 'lucide-react';
+import { LogOut, UserCircle, PackagePlus, LayoutDashboard, BarChart3, CreditCard } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 
 export default function Header() {
@@ -34,6 +34,12 @@ export default function Header() {
               </span>
               <Button variant="ghost" size="sm" onClick={() => router.push('/dashboard')} title="Tableau de bord">
                 <LayoutDashboard className="mr-2 h-4 w-4" /> Tableau de bord
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => router.push('/analytics')} title="Analytiques">
+                <BarChart3 className="mr-2 h-4 w-4" /> Analytiques
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => router.push('/payments')} title="Paiements">
+                <CreditCard className="mr-2 h-4 w-4" /> Paiements
               </Button>
               <Button variant="ghost" size="sm" onClick={() => router.push('/create-order')} title="Créer une commande">
                  <PackagePlus className="mr-2 h-4 w-4" /> Nouvelle Commande
